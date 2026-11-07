@@ -211,6 +211,49 @@ function RoleForm({ role, onBack, onDone }) {
   );
 }
 
+function ThanksModal({ mailtoHint, roleTitle, onClose, onAnother }) {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
+
+  return (
+    <div className="join-modal" role="dialog" aria-modal="true" aria-labelledby="join-thanks-title">
+      <button type="button" className="join-modal-backdrop" aria-label="Fermer" onClick={onClose} />
+      <div className="join-modal-card">
+        <div className="join-modal-mark" aria-hidden="true">
+          <span>✓</span>
+        </div>
+        <p className="join-kicker">Merci</p>
+        <h2 id="join-thanks-title">Votre réponse est bien envoyée</h2>
+        <p>
+          {mailtoHint
+            ? 'Si votre application e-mail s’est ouverte, appuyez sur Envoyer pour transmettre le message à l’équipe.'
+            : roleTitle
+              ? `Merci pour votre participation en tant que ${roleTitle}. L’équipe Fii-Moy Gorée a bien reçu votre message.`
+              : 'Merci. L’équipe Fii-Moy Gorée a bien reçu votre message.'}
+        </p>
+        <div className="join-modal-actions">
+          <button type="button" className="fm-btn fm-btn-primary" onClick={onAnother}>
+            Autre formulaire
+          </button>
+          <button type="button" className="fm-btn fm-btn-secondary" onClick={onClose}>
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Participate() {
   const [roleId, setRoleId] = useState(() => roleFromHash());
   const [done, setDone] = useState(false);
@@ -227,28 +270,11 @@ export default function Participate() {
     return () => window.removeEventListener('hashchange', sync);
   }, []);
 
-  if (done) {
-    return (
-      <section className="join-page">
-        <div className="container join-done">
-          <p className="join-kicker">Merci</p>
-          <h2>Votre réponse est enregistrée.</h2>
-          <p>
-            {mailtoHint
-              ? 'Si votre application e-mail s’est ouverte, appuyez sur Envoyer pour transmettre le message organisé à l’équipe.'
-              : 'Merci. Un e-mail organisé a été envoyé à l’équipe Fii-Moy Gorée.'}
-          </p>
-          <button
-            type="button"
-            className="fm-btn fm-btn-primary"
-            onClick={() => { window.location.hash = 'participer'; }}
-          >
-            Remplir un autre formulaire
-          </button>
-        </div>
-      </section>
-    );
-  }
+  const closeThanks = () => {
+    setDone(false);
+    setMailtoHint(false);
+    window.location.hash = 'participer';
+  };
 
   return (
     <section className="join-page">
@@ -282,6 +308,14 @@ export default function Participate() {
           />
         )}
       </div>
+      {done && (
+        <ThanksModal
+          mailtoHint={mailtoHint}
+          roleTitle={role?.title}
+          onClose={closeThanks}
+          onAnother={closeThanks}
+        />
+      )}
     </section>
   );
 }
