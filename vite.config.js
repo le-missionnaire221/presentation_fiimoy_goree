@@ -2,9 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-
-const TO = 'idrissac635@gmail.com';
-const CC = 'coulibalyidrissa672@gmail.com';
+import { sendParticipationMail } from './shared/sendParticipationMail.js';
 
 function participerApi() {
   return {
@@ -13,7 +11,8 @@ function participerApi() {
       server.middlewares.use('/api/participer', (req, res) => {
         if (req.method !== 'POST') {
           res.statusCode = 405;
-          res.end('POST only');
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ ok: false, error: 'POST only' }));
           return;
         }
         const chunks = [];
@@ -28,31 +27,18 @@ function participerApi() {
               `${JSON.stringify({ date: new Date().toISOString(), ...body })}\n`,
               'utf8',
             );
-            let emailed = false;
-            try {
-              const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(TO)}`, {
-                method: 'POST',
-                signal: AbortSignal.timeout(8000),
-                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({
-                  _subject: `Stand Fii-Moy Gorée — ${body.role || 'Participation'}`,
-                  _cc: CC,
-                  _captcha: 'false',
-                  _template: 'table',
-                  ...(body.fields || {}),
-                  Rôle: body.role,
-                }),
-              });
-              emailed = response.ok;
-            } catch {
-              emailed = false;
-            }
+            await sendParticipationMail(body.role, body.fields || {});
+            res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ ok: true, emailed }));
-          } catch {
-            res.statusCode = 400;
+            res.end(JSON.stringify({ ok: true, emailed: true }));
+          } catch (err) {
+            res.statusCode = 502;
             res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({ ok: false }));
+            res.end(JSON.stringify({
+              ok: false,
+              emailed: false,
+              error: err?.message || 'Envoi impossible',
+            }));
           }
         });
       });

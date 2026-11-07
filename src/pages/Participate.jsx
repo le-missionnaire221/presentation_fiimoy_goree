@@ -33,17 +33,26 @@ export function isParticipateHash(hash) {
   return hash === '#participer' || roleFromHash(hash) !== null;
 }
 
+const PUBLIC_SITE = (import.meta.env.VITE_SITE_URL || 'https://presentation-fiimoygoree.vercel.app').replace(/\/$/, '');
+
 function participateUrl() {
+  const host = window.location.hostname;
+  const local = host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local');
+  // Sur le stand / en ligne : toujours le lien public, pour que le téléphone ouvre le vrai site.
+  if (!local) return `${PUBLIC_SITE}/#participer`;
   return `${window.location.origin}${window.location.pathname}#participer`;
 }
 
 export function JoinStand() {
   const [src, setSrc] = useState('');
+  const [qrHref, setQrHref] = useState('');
   const local = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
   useEffect(() => {
     let alive = true;
-    QRCode.toDataURL(participateUrl(), {
+    const href = participateUrl();
+    setQrHref(href);
+    QRCode.toDataURL(href, {
       margin: 1,
       width: 240,
       color: { dark: '#1A1714', light: '#FFFFFF' },
@@ -61,6 +70,7 @@ export function JoinStand() {
           <h2>Rejoindre <span>le projet</span></h2>
           <p className="join-lead">
             Scannez le QR code. Chaque visiteur choisit comment participer, puis remplit un formulaire.
+            La réponse arrive organisée par e-mail.
           </p>
           <div className="join-roles">
             {ROLES.map((role) => (
@@ -77,9 +87,13 @@ export function JoinStand() {
         <div className="join-qr">
           {src ? <img src={src} alt="QR code pour rejoindre le projet" /> : <div className="join-qr-box" />}
           <p>Scannez pour participer</p>
+          {qrHref && !local && (
+            <p className="join-qr-link"><a href={qrHref}>{qrHref.replace(/^https?:\/\//, '')}</a></p>
+          )}
           {local && (
             <p className="join-warn">
-              Ouvrez ce site avec l’adresse IP de l’ordinateur, pas localhost, pour que le QR fonctionne sur les téléphones du stand.
+              En local, utilisez l’IP du PC (pas localhost) pour tester le QR sur un téléphone.
+              En production, le QR ouvre automatiquement le site Vercel.
             </p>
           )}
         </div>
@@ -95,7 +109,9 @@ async function sendParticipation(roleLabel, fields) {
     body: JSON.stringify({ role: roleLabel, fields }),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.ok) throw new Error('Envoi impossible. Réessayez.');
+  if (!res.ok || !data.ok || data.emailed === false) {
+    throw new Error(data.error || 'Envoi impossible. Réessayez dans un instant.');
+  }
 }
 
 function Field({ label, name, type = 'text', required, children }) {
@@ -192,7 +208,7 @@ export default function Participate() {
         <div className="container join-done">
           <p className="join-kicker">Merci</p>
           <h2>Votre réponse est enregistrée.</h2>
-          <p>Merci de participer à Fii-Moy Gorée.</p>
+          <p>Merci. Un e-mail organisé a été envoyé à l’équipe Fii-Moy Gorée.</p>
           <button
             type="button"
             className="fm-btn fm-btn-primary"

@@ -346,6 +346,8 @@ img { max-width: 100%; }
 .join-qr-box { background: #F3EEE5; border-radius: 12px; }
 .join-qr p { font-weight: 700; }
 .join-warn { margin-top: 10px; color: var(--red); font-size: 13px; font-weight: 600; }
+.join-qr-link { margin-top: 8px; font-size: 12px; word-break: break-all; }
+.join-qr-link a { color: var(--muted, #6b6560); text-decoration: underline; }
 .join-page { padding: 140px 0 80px; }
 .join-page h2 { font-size: 46px; }
 .join-choices { grid-template-columns: repeat(3, 1fr); margin-top: 28px; }
