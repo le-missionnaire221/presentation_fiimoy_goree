@@ -257,13 +257,14 @@ img { max-width: 100%; }
 .cta-floating-element { position: absolute; border-radius: 50%; filter: blur(24px); }
 .shape-1 { width: 140px; height: 140px; left: -20px; top: -20px; background: rgba(184,134,31,.25); }
 .shape-2 { width: 160px; height: 160px; right: -20px; bottom: -30px; background: rgba(47,122,77,.18); }
-.footer-grid { display: grid; grid-template-columns: 1.4fr .8fr .8fr; gap: 28px; padding-bottom: 40px; position: relative; }
+.footer-grid { display: grid; grid-template-columns: 1.3fr .7fr .7fr 1fr; gap: 28px; padding-bottom: 40px; position: relative; }
 .footer-logo { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }
 .footer-description, .footer-place { color: var(--muted); margin-top: 12px; max-width: 420px; }
 .footer-grid h4 { font-family: var(--display); margin-bottom: 12px; }
 .footer-grid ul { list-style: none; }
 .footer-grid li { margin: 8px 0; }
 .footer-grid a:hover { color: var(--gold-deep); }
+.footer-contact a { word-break: break-word; }
 .fm-footer-ultra-bottom { border-top: 1px solid var(--line); background: #fff; }
 .bottom-bar-content { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 0; color: var(--muted); font-size: 14px; }
 .trust-badge { background: rgba(184,134,31,.12); color: var(--gold-deep); border-radius: 999px; padding: 6px 12px; font-weight: 700; }

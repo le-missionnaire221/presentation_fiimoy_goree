@@ -45,6 +45,17 @@ export default function Footer() {
               <li><a href="#application">Carte interactive</a></li>
             </ul>
           </div>
+          <div>
+            <h4>Contact</h4>
+            <ul className="footer-contact">
+              <li>
+                <a href="mailto:idrissac635@gmail.com">idrissac635@gmail.com</a>
+              </li>
+              <li>
+                <a href="tel:+221787442021">+221 78 744 20 21</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
