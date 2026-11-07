@@ -1,6 +1,11 @@
-const PHOTO = '/photos/embarcadere.jpg';
+const EMBARCADERE = '/photos/embarcadere.jpg';
 const MAISON = '/photos/maison.jpg';
 const CASTEL = '/photos/castel.jpg';
+const JOJ = '/photos/joj.jpg';
+const VUE = '/photos/goree_vue_aerienne.png';
+const ENTREE = '/photos/entree_pierre.png';
+const PORTRAIT = '/photos/portrait_archeo.png';
+const DSC = '/photos/dsc01269.jpg';
 
 function Dock({ active = 0 }) {
   const items = ['⌂', '◎', '👥', '👤'];
@@ -39,9 +44,9 @@ export function ScreenHome() {
   const near = [
     ['Maison des Esclaves', 'Mémoire · 4 min', MAISON],
     ['Le Castel', 'Panorama · 3 min', CASTEL],
-    ['Embarcadère', 'Arrivée · 2 min', PHOTO],
-    ['Fort d’Estrées', 'Musée · 5 min', MAISON],
-    ['La Batterie', 'Patrimoine · 3 min', CASTEL],
+    ['Embarcadère', 'Arrivée · 2 min', EMBARCADERE],
+    ['Fort d’Estrées', 'Musée · 5 min', ENTREE],
+    ['La Batterie', 'Patrimoine · 3 min', DSC],
   ];
   return (
     <Shell active={0}>
@@ -49,7 +54,7 @@ export function ScreenHome() {
       <h3>Na nga def ?</h3>
       <div className="as-search">Un lieu, une histoire, un guide...</div>
       <p className="as-h">À la une</p>
-      <div className="as-hero" style={{ backgroundImage: 'url(/photos/joj.jpg)', backgroundPosition: 'center 58%' }}>
+      <div className="as-hero" style={{ backgroundImage: `url(${JOJ})`, backgroundPosition: 'center 58%' }}>
         <span>ÉVÉNEMENT</span>
         <strong>JOJ Dakar 2026</strong>
         <em>31 oct. – 13 nov.</em>
@@ -78,14 +83,14 @@ export function ScreenHome() {
 
 export function ScreenExplore() {
   const tiles = [
-    [PHOTO, 'Ancien Palais', '216'],
+    [VUE, 'Ancien Palais', '216'],
     [MAISON, 'Maison des Esclaves', '150'],
     [CASTEL, 'Le Castel', '170'],
-    [PHOTO, 'Batterie', '200'],
-    [MAISON, 'Fort d’Estrées', '180'],
-    [CASTEL, 'Église Saint-Charles', '160'],
-    [PHOTO, 'Plage de Gorée', '190'],
-    [MAISON, 'Rue des Artisans', '150'],
+    [EMBARCADERE, 'Batterie', '200'],
+    [ENTREE, 'Fort d’Estrées', '180'],
+    [DSC, 'Église Saint-Charles', '160'],
+    [PORTRAIT, 'Plage de Gorée', '190'],
+    [JOJ, 'Rue des Artisans', '150'],
   ];
   return (
     <Shell active={1}>
@@ -111,13 +116,13 @@ export function ScreenExplore() {
 
 export function ScreenMemory() {
   const items = [
-    ['L’art du sable', 'Audio · 4 min', MAISON],
-    ['La Maison des Esclaves', 'Récit · 6 min', PHOTO],
+    ['L’art du sable', 'Audio · 4 min', DSC],
+    ['La Maison des Esclaves', 'Récit · 6 min', MAISON],
     ['Le Castel, 1940', 'Audio · 3 min', CASTEL],
-    ['Les signares', 'Texte · 6 min', MAISON],
-    ['Les chants de l’île', 'Audio · 3 min', PHOTO],
-    ['La traversée', 'Récit · 8 min', CASTEL],
-    ['Les façades colorées', 'Audio · 4 min', PHOTO],
+    ['Les signares', 'Texte · 6 min', PORTRAIT],
+    ['Les chants de l’île', 'Audio · 3 min', EMBARCADERE],
+    ['La traversée', 'Récit · 8 min', VUE],
+    ['Les façades colorées', 'Audio · 4 min', ENTREE],
   ];
   return (
     <Shell active={0}>
@@ -160,16 +165,16 @@ export function ScreenGuides() {
 export function ScreenParcours() {
   const steps = [
     ['Maison des Esclaves', 'Étape 1 · Mémoire', MAISON],
-    ['Église Saint-Charles', 'Étape 2 · Culture', PHOTO],
-    ['Musée historique', 'Étape 3 · Fort d’Estrées', CASTEL],
+    ['Église Saint-Charles', 'Étape 2 · Culture', ENTREE],
+    ['Musée historique', 'Étape 3 · Fort d’Estrées', PORTRAIT],
     ['Le Castel', 'Étape 4 · Panorama', CASTEL],
-    ['La Batterie', 'Étape 5 · Patrimoine', MAISON],
-    ['Embarcadère', 'Étape 6 · Retour', PHOTO],
+    ['La Batterie', 'Étape 5 · Patrimoine', DSC],
+    ['Embarcadère', 'Étape 6 · Retour', EMBARCADERE],
   ];
   return (
     <Shell active={0}>
       <p className="as-kicker">Recommandé</p>
-      <div className="as-hero tall" style={{ backgroundImage: `url(${PHOTO})` }}>
+      <div className="as-hero tall" style={{ backgroundImage: `url(${VUE})` }}>
         <span>PARCOURS</span>
         <strong>Visite guidée de Gorée</strong>
         <em>6 étapes · à ton rythme</em>
@@ -193,10 +198,10 @@ export function ScreenParcours() {
 
 export function ScreenPlace() {
   const photos = [
-    [MAISON, 'La cour', '170'],
-    [CASTEL, 'La porte', '150'],
-    [PHOTO, 'L’océan', '190'],
-    [MAISON, 'Les cellules', '160'],
+    [CASTEL, 'La cour', '170'],
+    [ENTREE, 'La porte', '150'],
+    [EMBARCADERE, 'L’océan', '190'],
+    [PORTRAIT, 'Sur place', '160'],
   ];
   return (
     <Shell active={1}>
@@ -218,8 +223,8 @@ export function ScreenPlace() {
           </div>
         ))}
       </div>
-      <Listen title="Histoire de la maison" meta="Récit · 5 min" img={MAISON} />
-      <Listen title="La porte du voyage sans retour" meta="Audio · 3 min" img={PHOTO} />
+      <Listen title="Histoire de la maison" meta="Récit · 5 min" img={DSC} />
+      <Listen title="La porte du voyage sans retour" meta="Audio · 3 min" img={VUE} />
     </Shell>
   );
 }
