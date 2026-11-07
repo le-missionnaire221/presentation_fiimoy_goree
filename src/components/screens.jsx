@@ -1,3 +1,15 @@
+import {
+  IconExplore,
+  IconHeadphones,
+  IconHeart,
+  IconHome,
+  IconPeople,
+  IconPin,
+  IconPlay,
+  IconRoute,
+  IconUser,
+} from './appIcons.jsx';
+
 const EMBARCADERE = '/photos/embarcadere.jpg';
 const MAISON = '/photos/maison.jpg';
 const CASTEL = '/photos/castel.jpg';
@@ -7,12 +19,15 @@ const ENTREE = '/photos/entree_pierre.png';
 const PORTRAIT = '/photos/portrait_archeo.png';
 const DSC = '/photos/dsc01269.jpg';
 
+const DOCK = [IconHome, IconExplore, IconPeople, IconUser];
+
 function Dock({ active = 0 }) {
-  const items = ['⌂', '◎', '👥', '👤'];
   return (
     <div className="as-dock">
-      {items.map((ic, i) => (
-        <span key={ic} className={i === active ? 'on' : ''}>{ic}</span>
+      {DOCK.map((Icon, i) => (
+        <span key={Icon.name || i} className={i === active ? 'on' : ''}>
+          <Icon size={18} />
+        </span>
       ))}
     </div>
   );
@@ -35,7 +50,7 @@ function Listen({ title, meta, img }) {
         <strong>{title}</strong>
         <small>{meta}</small>
       </div>
-      <b>▶</b>
+      <b><IconPlay size={11} /></b>
     </div>
   );
 }
@@ -47,6 +62,12 @@ export function ScreenHome() {
     ['Embarcadère', 'Arrivée · 2 min', EMBARCADERE],
     ['Fort d’Estrées', 'Musée · 5 min', ENTREE],
     ['La Batterie', 'Patrimoine · 3 min', DSC],
+  ];
+  const chips = [
+    [IconHeadphones, 'Mémoire'],
+    [IconRoute, 'Parcours'],
+    [IconPin, 'Carte'],
+    [IconHeart, 'Favoris'],
   ];
   return (
     <Shell active={0}>
@@ -61,14 +82,9 @@ export function ScreenHome() {
       </div>
       <p className="as-h">En un geste</p>
       <div className="as-row">
-        {[
-          ['🎧', 'Mémoire'],
-          ['↝', 'Parcours'],
-          ['📍', 'Carte'],
-          ['♡', 'Favoris'],
-        ].map(([ic, lb]) => (
+        {chips.map(([Icon, lb]) => (
           <div key={lb} className="as-chip">
-            <i>{ic}</i>
+            <i><Icon size={18} /></i>
             {lb}
           </div>
         ))}
@@ -82,15 +98,16 @@ export function ScreenHome() {
 }
 
 export function ScreenExplore() {
+  // Hauteurs volontairement décalées pour un masonry 2 colonnes comme l’app.
   const tiles = [
-    [VUE, 'Ancien Palais', '216'],
-    [MAISON, 'Maison des Esclaves', '150'],
-    [CASTEL, 'Le Castel', '170'],
-    [EMBARCADERE, 'Batterie', '200'],
-    [ENTREE, 'Fort d’Estrées', '180'],
-    [DSC, 'Église Saint-Charles', '160'],
-    [PORTRAIT, 'Plage de Gorée', '190'],
-    [JOJ, 'Rue des Artisans', '150'],
+    [VUE, 'Ancien Palais du Gouverneur', 'Zone Ouest : Places & Places', 230],
+    [PORTRAIT, 'Ateliers des Peintres au Sable', 'Zone Sud : Castel & Fort', 148],
+    [CASTEL, 'Canons Schneider 240 mm du Castel', 'Zone Sud : Castel & Fort', 210],
+    [EMBARCADERE, 'Batterie de la Solitude', 'Zone Sud : Castel & Fort', 168],
+    [MAISON, 'Maison des Esclaves', 'Zone Nord : Mémoire', 188],
+    [ENTREE, 'Fort d’Estrées', 'Zone Nord : Musée', 156],
+    [DSC, 'Église Saint-Charles', 'Zone Ouest : Places', 198],
+    [JOJ, 'Rue des Artisans', 'Zone Est : Village', 142],
   ];
   return (
     <Shell active={1}>
@@ -99,14 +116,14 @@ export function ScreenExplore() {
       <div className="as-pills">
         <b>Tout</b>
         <span>Zone Nord</span>
-        <span>Mémoire</span>
+        <span>Zone Sud</span>
       </div>
       <div className="as-mosaic">
-        {tiles.map(([src, title, h]) => (
-          <div key={title}>
-            <img src={src} alt="" style={{ height: `${h / 3.2}px` }} />
+        {tiles.map(([src, title, zone, h]) => (
+          <div key={title} className="as-tile">
+            <img src={src} alt="" style={{ height: `${h / 3.15}px` }} />
             <strong>{title}</strong>
-            <small>● Patrimoine</small>
+            <small><span className="as-dot" />{zone}</small>
           </div>
         ))}
       </div>
@@ -216,10 +233,10 @@ export function ScreenPlace() {
       <p className="as-h">Photos du lieu</p>
       <div className="as-mosaic">
         {photos.map(([src, title, h]) => (
-          <div key={title}>
-            <img src={src} alt="" style={{ height: `${h / 3.2}px` }} />
+          <div key={title} className="as-tile">
+            <img src={src} alt="" style={{ height: `${h / 3.15}px` }} />
             <strong>{title}</strong>
-            <small>● Mémoire</small>
+            <small><span className="as-dot" />Mémoire</small>
           </div>
         ))}
       </div>

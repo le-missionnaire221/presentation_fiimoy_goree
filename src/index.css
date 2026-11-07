@@ -286,18 +286,35 @@ img { max-width: 100%; }
 .as-hero em { font-style: normal; font-size: 11px; color: #EDE6DA; }
 .as-row { display: flex; gap: 8px; }
 .as-chip { width: 58px; text-align: center; font-size: 10px; font-weight: 700; }
-.as-chip i { width: 46px; height: 46px; margin: 0 auto 4px; border-radius: 50%; border: 1px solid #2C2824; background: #151311; display: grid; place-items: center; font-style: normal; font-size: 16px; }
+.as-chip i {
+  width: 46px; height: 46px; margin: 0 auto 4px; border-radius: 50%;
+  border: 1px solid #2C2824; background: #151311;
+  display: grid; place-items: center; font-style: normal; color: #EDE6DA;
+}
 .as-pills { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: nowrap; }
 .as-pills b, .as-pills span {
   font-size: 11px; line-height: 1; border-radius: 999px; padding: 6px 10px;
   border: 1px solid #EDE6DA; white-space: nowrap; flex: none;
 }
 .as-pills b { background: #EDE6DA; color: #0B0A09; }
-.as-mosaic { columns: 2; gap: 8px; }
-.as-mosaic div { break-inside: avoid; margin-bottom: 8px; }
-.as-mosaic img { width: 100%; object-fit: cover; border-radius: 14px; display: block; }
-.as-mosaic strong, .as-listen strong, .as-guide strong { display: block; font-size: 12px; }
-.as-mosaic small, .as-listen small, .as-guide small { color: #9C9286; font-size: 10px; }
+.as-mosaic { columns: 2; column-gap: 10px; }
+.as-mosaic .as-tile { break-inside: avoid; margin-bottom: 12px; }
+.as-mosaic img {
+  width: 100%; object-fit: cover; border-radius: 16px; display: block;
+  margin-bottom: 6px; background: #151311;
+}
+.as-mosaic strong {
+  display: block; font-size: 12px; font-weight: 800; line-height: 1.25;
+  letter-spacing: -.1px; margin-bottom: 2px;
+}
+.as-listen strong, .as-guide strong { display: block; font-size: 12px; }
+.as-mosaic small, .as-listen small, .as-guide small {
+  color: #9C9286; font-size: 10px; display: flex; align-items: center; gap: 5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.as-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: #3E8E5E; flex: none;
+}
 .as-listen, .as-guide {
   display: flex; align-items: center; gap: 8px; background: #151311; border: 1px solid #2C2824;
   border-radius: 16px; padding: 8px; margin-bottom: 8px;
@@ -316,9 +333,13 @@ img { max-width: 100%; }
 .as-cta { display: inline-block; background: #EDE6DA; color: #0B0A09; border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 800; }
 .as-dock {
   height: 54px; margin: 0 18px 10px; border-radius: 999px; background: #151311; border: 1px solid #2C2824;
-  display: flex; align-items: center; justify-content: space-around; font-size: 16px;
+  display: flex; align-items: center; justify-content: space-around;
 }
-.as-dock .on { width: 34px; height: 34px; border-radius: 50%; background: #EDE6DA; color: #0B0A09; display: grid; place-items: center; }
+.as-dock span {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; color: #9C9286;
+}
+.as-dock .on { background: #EDE6DA; color: #0B0A09; }
 
 .join-stand { padding: 40px 0 80px; }
 .join-stand-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 48px; align-items: center; }
