@@ -102,16 +102,39 @@ export function JoinStand() {
   );
 }
 
+const MAIL_TO = 'idrissac635@gmail.com';
+const MAIL_CC = 'coulibalyidrissa672@gmail.com';
+
+function buildMailto(roleLabel, fields) {
+  const lines = [
+    `Rôle : ${roleLabel}`,
+    `Date : ${new Date().toLocaleString('fr-FR')}`,
+    '',
+    ...Object.entries(fields).map(([key, value]) => `${key} : ${value}`),
+    '',
+    '— Envoyé depuis le stand Fii-Moy Gorée',
+  ];
+  const subject = `Fii-Moy Gorée · Stand — ${roleLabel}`;
+  const body = lines.join('\n');
+  return `mailto:${encodeURIComponent(MAIL_TO)}?cc=${encodeURIComponent(MAIL_CC)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 async function sendParticipation(roleLabel, fields) {
-  const res = await fetch('/api/participer', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ role: roleLabel, fields }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.ok || data.emailed === false) {
-    throw new Error(data.error || 'Envoi impossible. Réessayez dans un instant.');
+  try {
+    const res = await fetch('/api/participer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: roleLabel, fields }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.ok && data.emailed !== false) return { via: 'api' };
+  } catch {
+    // fallback ci-dessous
   }
+
+  // Secours stand : ouvre l’appli mail du téléphone avec le message déjà organisé.
+  window.location.href = buildMailto(roleLabel, fields);
+  return { via: 'mailto' };
 }
 
 function Field({ label, name, type = 'text', required, children }) {
@@ -134,8 +157,8 @@ function RoleForm({ role, onBack, onDone }) {
     setSending(true);
     setError('');
     try {
-      await sendParticipation(role.title, fields);
-      onDone();
+      const result = await sendParticipation(role.title, fields);
+      onDone(result?.via === 'mailto');
     } catch (err) {
       setError(err.message || 'L’envoi n’a pas abouti. Réessayez.');
       setSending(false);
@@ -191,12 +214,14 @@ function RoleForm({ role, onBack, onDone }) {
 export default function Participate() {
   const [roleId, setRoleId] = useState(() => roleFromHash());
   const [done, setDone] = useState(false);
+  const [mailtoHint, setMailtoHint] = useState(false);
   const role = ROLES.find((item) => item.id === roleId);
 
   useEffect(() => {
     const sync = () => {
       setRoleId(roleFromHash());
       setDone(false);
+      setMailtoHint(false);
     };
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
@@ -208,7 +233,11 @@ export default function Participate() {
         <div className="container join-done">
           <p className="join-kicker">Merci</p>
           <h2>Votre réponse est enregistrée.</h2>
-          <p>Merci. Un e-mail organisé a été envoyé à l’équipe Fii-Moy Gorée.</p>
+          <p>
+            {mailtoHint
+              ? 'Si votre application e-mail s’est ouverte, appuyez sur Envoyer pour transmettre le message organisé à l’équipe.'
+              : 'Merci. Un e-mail organisé a été envoyé à l’équipe Fii-Moy Gorée.'}
+          </p>
           <button
             type="button"
             className="fm-btn fm-btn-primary"
@@ -246,7 +275,10 @@ export default function Participate() {
             key={role.id}
             role={role}
             onBack={() => { window.location.hash = 'participer'; }}
-            onDone={() => setDone(true)}
+            onDone={(viaMailto) => {
+              setMailtoHint(Boolean(viaMailto));
+              setDone(true);
+            }}
           />
         )}
       </div>
