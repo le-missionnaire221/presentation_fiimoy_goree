@@ -270,6 +270,7 @@ img { max-width: 100%; }
 .trust-badge { background: rgba(184,134,31,.12); color: var(--gold-deep); border-radius: 999px; padding: 6px 12px; font-weight: 700; }
 
 .as { height: 100%; background: #0B0A09; color: #EDE6DA; font-family: 'Outfit', sans-serif; display: flex; flex-direction: column; position: relative; }
+.as-shot-wrap { padding: 0; overflow: hidden; }
 .as-body { flex: 1; padding: 28px 14px 8px; overflow: hidden; }
 .as-kicker { color: #9C9286; font-size: 11px; margin-bottom: 2px; }
 .as h3 { font-size: 26px; letter-spacing: -.4px; line-height: 1.05; margin-bottom: 10px; }

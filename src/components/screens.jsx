@@ -98,36 +98,15 @@ export function ScreenHome() {
 }
 
 export function ScreenExplore() {
-  // Hauteurs volontairement décalées pour un masonry 2 colonnes comme l’app.
-  const tiles = [
-    [VUE, 'Ancien Palais du Gouverneur', 'Zone Ouest : Places & Places', 230],
-    [PORTRAIT, 'Ateliers des Peintres au Sable', 'Zone Sud : Castel & Fort', 148],
-    [CASTEL, 'Canons Schneider 240 mm du Castel', 'Zone Sud : Castel & Fort', 210],
-    [EMBARCADERE, 'Batterie de la Solitude', 'Zone Sud : Castel & Fort', 168],
-    [MAISON, 'Maison des Esclaves', 'Zone Nord : Mémoire', 188],
-    [ENTREE, 'Fort d’Estrées', 'Zone Nord : Musée', 156],
-    [DSC, 'Église Saint-Charles', 'Zone Ouest : Places', 198],
-    [JOJ, 'Rue des Artisans', 'Zone Est : Village', 142],
-  ];
+  // Capture réelle de l’écran Explorer dans l’application.
   return (
-    <Shell active={1}>
-      <p className="as-kicker">L'île en images</p>
-      <h3>Explorer Gorée</h3>
-      <div className="as-pills">
-        <b>Tout</b>
-        <span>Zone Nord</span>
-        <span>Zone Sud</span>
-      </div>
-      <div className="as-mosaic">
-        {tiles.map(([src, title, zone, h]) => (
-          <div key={title} className="as-tile">
-            <img src={src} alt="" style={{ height: `${h / 3.15}px` }} />
-            <strong>{title}</strong>
-            <small><span className="as-dot" />{zone}</small>
-          </div>
-        ))}
-      </div>
-    </Shell>
+    <div className="as as-shot-wrap">
+      <img
+        src="/photos/explorer_screen.png"
+        alt="Explorer Gorée"
+        className="phone-screen-img"
+      />
+    </div>
   );
 }
 
