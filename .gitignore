@@ -1,0 +1,8 @@
+node_modules
+dist
+.chrome-tmp
+data
+.vercel
+.env
+.env.*
+!.env.example
