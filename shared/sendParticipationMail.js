@@ -83,13 +83,23 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;');
 }
 
-export async function sendParticipationMail(role, fields) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error('Configuration e-mail manquante (RESEND_API_KEY).');
-  }
+function getApiKeys() {
+  return [process.env.RESEND_API_KEY, process.env.RESEND_API_KEY_2]
+    .map((key) => String(key || '').trim())
+    .filter(Boolean);
+}
 
-  const mail = buildMailContent(role, fields);
+function isQuotaError(status, message) {
+  const text = String(message || '').toLowerCase();
+  return status === 429
+    || /quota|rate.?limit|too many|daily_quota|monthly_quota/.test(text);
+}
+
+function isRecipientError(message) {
+  return /cc|recipient|domain|only send testing|verified/i.test(String(message || ''));
+}
+
+function buildPayload(mail, { withCc = true } = {}) {
   const payload = {
     from: 'Fii-Moy Gorée <onboarding@resend.dev>',
     to: [MAIL_TO],
@@ -98,46 +108,68 @@ export async function sendParticipationMail(role, fields) {
     text: mail.text,
   };
   if (mail.replyTo) payload.reply_to = mail.replyTo;
-  // Avec onboarding@resend.dev, Resend n’accepte souvent que l’e-mail du compte.
-  // On met le CC dans le corps si le second envoi n’est pas possible.
-  if (MAIL_CC && MAIL_CC !== MAIL_TO) {
-    payload.cc = [MAIL_CC];
+  if (withCc && MAIL_CC && MAIL_CC !== MAIL_TO) payload.cc = [MAIL_CC];
+  return payload;
+}
+
+async function sendWithKey(apiKey, mail) {
+  let payload = buildPayload(mail, { withCc: true });
+
+  const post = async (body) => {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      signal: AbortSignal.timeout(15000),
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json().catch(() => ({}));
+    return { response, data };
+  };
+
+  let { response, data } = await post(payload);
+  if (response.ok) return { ok: true, id: data.id, mail };
+
+  const msg = data?.message || data?.error || 'Envoi e-mail impossible';
+
+  // Sans CC si Resend refuse le destinataire en copie.
+  if (payload.cc && isRecipientError(msg)) {
+    payload = buildPayload(mail, { withCc: false });
+    payload.html += `<p style="margin-top:16px;color:#5c564f">Copie prévue aussi pour : ${escapeHtml(MAIL_CC)}</p>`;
+    ({ response, data } = await post(payload));
+    if (response.ok) return { ok: true, id: data.id, mail };
   }
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    signal: AbortSignal.timeout(15000),
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  const finalMsg = data?.message || data?.error || msg;
+  const error = new Error(typeof finalMsg === 'string' ? finalMsg : 'Envoi e-mail impossible');
+  error.status = response.status;
+  error.quota = isQuotaError(response.status, finalMsg);
+  throw error;
+}
 
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    // Si le CC est refusé, retenter sans CC.
-    const msg = data?.message || data?.error || 'Envoi e-mail impossible';
-    if (payload.cc && /cc|recipient|domain/i.test(String(msg))) {
-      delete payload.cc;
-      payload.html += `<p style="margin-top:16px;color:#5c564f">Copie prévue aussi pour : ${escapeHtml(MAIL_CC)}</p>`;
-      const retry = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        signal: AbortSignal.timeout(15000),
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-      const retryData = await retry.json().catch(() => ({}));
-      if (!retry.ok) {
-        throw new Error(retryData?.message || retryData?.error || msg);
-      }
-      return { ok: true, id: retryData.id, mail };
+export async function sendParticipationMail(role, fields) {
+  const keys = getApiKeys();
+  if (!keys.length) {
+    throw new Error('Configuration e-mail manquante (RESEND_API_KEY).');
+  }
+
+  const mail = buildMailContent(role, fields);
+  let lastError;
+
+  for (let i = 0; i < keys.length; i += 1) {
+    try {
+      const result = await sendWithKey(keys[i], mail);
+      return { ...result, via: i === 0 ? 'primary' : 'backup' };
+    } catch (err) {
+      lastError = err;
+      const hasNext = i < keys.length - 1;
+      // Passe au compte suivant si quota dépassé, ou en dernier recours pour tout échec.
+      if (hasNext && (err.quota || i === 0)) continue;
+      throw err;
     }
-    throw new Error(typeof msg === 'string' ? msg : 'Envoi e-mail impossible');
   }
 
-  return { ok: true, id: data.id, mail };
+  throw lastError || new Error('Envoi e-mail impossible');
 }
